@@ -73,3 +73,78 @@ a:hover {
     color: #000;
     border-bottom: 1px solid #ff0000;
 }
+
+#contact { 
+    margin-top: 40px; 
+    padding-top: 20px;
+}
+
+.form-row { 
+    margin-bottom: 20px; 
+}
+
+.form-row label { 
+    display: block; 
+    margin-bottom: 8px; 
+    color: #ff0000;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+#valeriiForm input, #valeriiForm textarea { 
+    width: 100%; 
+    padding: 12px; 
+    background: #1a0000;
+    color: #ffcccc;
+    border: 1px solid #ff0000; 
+    border-radius: 0;
+    box-sizing: border-box; 
+    font-family: monospace;
+}
+
+#valeriiForm input:focus, #valeriiForm textarea:focus {
+    outline: none;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+}
+
+#sendBtn {
+    background-color: #ff0000;
+    color: #000000;
+    padding: 12px 30px;
+    border: 2px solid #ff0000; 
+    border-radius: 0;
+    font-weight: bold;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: auto;
+    display: block;
+    margin: 20px 0;
+}
+
+#sendBtn:hover {
+    background-color: transparent;
+    color: #ff0000;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+}
+
+.err { 
+    color: #ff4d4d;
+    display: block; 
+    margin-top: 5px; 
+    min-height: 1.2em; 
+    font-size: 0.8em; 
+    text-transform: uppercase;
+}
+
+.success { 
+    color: #ff0000;
+    font-weight: bold; 
+    text-align: center; 
+    border: 2px solid #ff0000;
+    padding: 10px;
+    margin-top: 15px;
+    text-transform: uppercase;
+    background: rgba(40, 0, 0, 0.9);
+}

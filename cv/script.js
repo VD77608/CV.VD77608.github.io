@@ -35,3 +35,46 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+    const vForm = document.getElementById('valeriiForm');
+    
+    vForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        let isValid = true;
+
+        document.querySelectorAll('.err').forEach(e => e.textContent = '');
+        document.getElementById('statusMsg').textContent = '';
+
+        const fields = {
+            fn: document.getElementById('fname').value.trim(),
+            ln: document.getElementById('lname').value.trim(),
+            em: document.getElementById('uemail').value.trim(),
+            ms: document.getElementById('umsg').value.trim()
+        };
+
+        if (!fields.fn) { document.getElementById('fnameErr').textContent = 'Imię jest wymagane'; isValid = false; }
+        if (!fields.ln) { document.getElementById('lnameErr').textContent = 'Nazwisko jest wymagane'; isValid = false; }
+        if (!fields.em) { document.getElementById('uemailErr').textContent = 'Email jest wymagany'; isValid = false; }
+        if (!fields.ms) { document.getElementById('umsgErr').textContent = 'Wiadomość nie może być pusta'; isValid = false; }
+
+        if (fields.em && !fields.em.includes('@')) {
+            document.getElementById('uemailErr').textContent = 'Email musi zawierać znak @';
+            isValid = false;
+        }
+
+        const hasDigits = (str) => /[0-9]/.test(str);
+        if (hasDigits(fields.fn)) {
+            document.getElementById('fnameErr').textContent = 'Imię nie może zawierać cyfr';
+            isValid = false;
+        }
+        if (hasDigits(fields.ln)) {
+            document.getElementById('lnameErr').textContent = 'Nazwisko nie może zawierać cyfr';
+            isValid = false;
+        }
+
+        if (isValid) {
+            document.getElementById('statusMsg').textContent = 'Formularz zweryfikowany poprawnie!';
+            vForm.reset();
+        }
+    });
