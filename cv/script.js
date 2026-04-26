@@ -1,50 +1,59 @@
 document.addEventListener('DOMContentLoaded', () => {
     const themeToggleBtn = document.getElementById('themeToggleBtn');
     const themeStylesheet = document.getElementById('themeStylesheet');
-
     const sectionToggleBtn = document.getElementById('sectionToggleBtn');
     const projectsSection = document.getElementById('projectsSection');
 
     themeToggleBtn.addEventListener('click', () => {
-        if (themeStylesheet.getAttribute('href') === 'red.css') {
-            themeStylesheet.setAttribute('href', 'green.css');
-            console.log("Zmieniono motyw na: Green");
-        } else {
-            themeStylesheet.setAttribute('href', 'red.css');
-            console.log("Zmieniono motyw na: Red");
-        }
+        const currentTheme = themeStylesheet.getAttribute('href');
+        const newTheme = currentTheme === 'red.css' ? 'green.css' : 'red.css';
+        themeStylesheet.setAttribute('href', newTheme);
     });
-
-    if (projectsSection.classList.contains('hidden')) {
-        sectionToggleBtn.textContent = 'Pokaż sekcję Projekty';
-    } else {
-        sectionToggleBtn.textContent = 'Ukryj sekcję Projekty';
-    }
 
     sectionToggleBtn.addEventListener('click', () => {
         projectsSection.classList.toggle('hidden');
-        
-        const isHidden = projectsSection.classList.contains('hidden');
-        
-        if (isHidden) {
-            sectionToggleBtn.textContent = 'Pokaż sekcję Projekty';
-            console.log("Sekcja Projekty została ukryta");
-        } else {
-            sectionToggleBtn.textContent = 'Ukryj sekcję Projekty';
-            console.log("Sekcja Projekty jest teraz widoczna");
-        }
+        sectionToggleBtn.textContent = projectsSection.classList.contains('hidden') 
+            ? 'Pokaż sekcję Projekty' 
+            : 'Ukryj sekcję Projekty';
     });
-});
+
+    async function loadData() {
+        try {
+            const response = await fetch('data.json');
+            if (!response.ok) throw new Error('Problem z plikiem JSON');
+            
+            const data = await response.json();
+
+            const skillsList = document.getElementById('skills-list');
+            data.umiejetnosci.forEach(skill => {
+                const li = document.createElement('li');
+                li.textContent = skill;
+                skillsList.appendChild(li);
+            });
+
+            const projectsList = document.getElementById('projects-list');
+            data.projekty.forEach(proj => {
+                const li = document.createElement('li');
+                li.innerHTML = `<strong>${proj.tytul}</strong> – ${proj.opis}`;
+                projectsList.appendChild(li);
+            });
+
+            console.log("Dane załadowane pomyślnie!");
+        } catch (error) {
+            console.error("Błąd fetch:", error);
+        }
+    }
+
+    loadData();
 
     const vForm = document.getElementById('valeriiForm');
-    
     vForm.addEventListener('submit', function(event) {
         event.preventDefault();
         
         let isValid = true;
-
         document.querySelectorAll('.err').forEach(e => e.textContent = '');
-        document.getElementById('statusMsg').textContent = '';
+        const statusMsg = document.getElementById('statusMsg');
+        statusMsg.textContent = '';
 
         const fields = {
             fn: document.getElementById('fname').value.trim(),
@@ -64,17 +73,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const hasDigits = (str) => /[0-9]/.test(str);
-        if (hasDigits(fields.fn)) {
-            document.getElementById('fnameErr').textContent = 'Imię nie może zawierać cyfr';
-            isValid = false;
-        }
-        if (hasDigits(fields.ln)) {
-            document.getElementById('lnameErr').textContent = 'Nazwisko nie może zawierać cyfr';
+        if (hasDigits(fields.fn) || hasDigits(fields.ln)) {
+            if (hasDigits(fields.fn)) document.getElementById('fnameErr').textContent = 'Imię nie może zawierać cyfr';
+            if (hasDigits(fields.ln)) document.getElementById('lnameErr').textContent = 'Nazwisko nie может zawierać cyfr';
             isValid = false;
         }
 
         if (isValid) {
-            document.getElementById('statusMsg').textContent = 'Formularz zweryfikowany poprawnie!';
+            statusMsg.textContent = 'Formularz zweryfikowany poprawnie!';
             vForm.reset();
         }
     });
+});
