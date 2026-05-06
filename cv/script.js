@@ -17,32 +17,74 @@ document.addEventListener('DOMContentLoaded', () => {
             : 'Ukryj sekcję Projekty';
     });
 
-    async function loadData() {
-        try {
-            const response = await fetch('data.json');
-            if (!response.ok) throw new Error('Problem z plikiem JSON');
-            
-            const data = await response.json();
+    const noteInput = document.getElementById('noteInput');
+    const addNoteBtn = document.getElementById('addNoteBtn');
+    const notesList = document.getElementById('notesList');
 
-            const skillsList = document.getElementById('skills-list');
-            data.umiejetnosci.forEach(skill => {
-                const li = document.createElement('li');
-                li.textContent = skill;
-                skillsList.appendChild(li);
-            });
+    function renderNotes() {
+        const savedNotes = JSON.parse(localStorage.getItem('userNotes')) || [];
+        notesList.innerHTML = '';
 
-            const projectsList = document.getElementById('projects-list');
-            data.projekty.forEach(proj => {
-                const li = document.createElement('li');
-                li.innerHTML = `<strong>${proj.tytul}</strong> – ${proj.opis}`;
-                projectsList.appendChild(li);
-            });
-
-            console.log("Dane załadowane pomyślnie!");
-        } catch (error) {
-            console.error("Błąd fetch:", error);
-        }
+        savedNotes.forEach((note, index) => {
+            const li = document.createElement('li');
+            li.style.display = 'flex';
+            li.style.justifyContent = 'space-between';
+            li.style.marginBottom = '10px';
+        
+            li.innerHTML = `
+                <span>${note}</span>
+                <button onclick="deleteNote(${index})" style="padding: 2px 8px; cursor: pointer;">Usuń</button>
+            `;
+            notesList.appendChild(li);
+        });
     }
+
+    addNoteBtn.addEventListener('click', () => {
+        const text = noteInput.value.trim();
+        if (text) {
+            const notes = JSON.parse(localStorage.getItem('userNotes')) || [];
+            notes.push(text);
+            localStorage.setItem('userNotes', JSON.stringify(notes));
+            noteInput.value = '';
+            renderNotes();
+        }
+    });
+
+    window.deleteNote = (index) => {
+        const notes = JSON.parse(localStorage.getItem('userNotes')) || [];
+        notes.splice(index, 1);
+        localStorage.setItem('userNotes', JSON.stringify(notes));
+        renderNotes();
+    };
+
+    renderNotes();
+
+        async function loadData() {
+            try {
+                const response = await fetch('data.json');
+                if (!response.ok) throw new Error('Problem z plikiem JSON');
+                
+                const data = await response.json();
+    
+                const skillsList = document.getElementById('skills-list');
+                data.umiejetnosci.forEach(skill => {
+                    const li = document.createElement('li');
+                    li.textContent = skill;
+                    skillsList.appendChild(li);
+                });
+    
+                const projectsList = document.getElementById('projects-list');
+                data.projekty.forEach(proj => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<strong>${proj.tytul}</strong> – ${proj.opis}`;
+                    projectsList.appendChild(li);
+                });
+    
+                console.log("Dane załadowane pomyślnie!");
+            } catch (error) {
+                console.error("Błąd fetch:", error);
+            }
+        }
 
     loadData();
 
