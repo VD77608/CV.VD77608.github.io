@@ -24,13 +24,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderNotes() {
         const savedNotes = JSON.parse(localStorage.getItem('userNotes')) || [];
         notesList.innerHTML = '';
-
         savedNotes.forEach((note, index) => {
             const li = document.createElement('li');
             li.style.display = 'flex';
             li.style.justifyContent = 'space-between';
             li.style.marginBottom = '10px';
-        
             li.innerHTML = `
                 <span>${note}</span>
                 <button onclick="deleteNote(${index})" style="padding: 2px 8px; cursor: pointer;">Usuń</button>
@@ -59,33 +57,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     renderNotes();
 
-        async function loadData() {
-            try {
-                const response = await fetch('data.json');
-                if (!response.ok) throw new Error('Problem z plikiem JSON');
-                
-                const data = await response.json();
-    
-                const skillsList = document.getElementById('skills-list');
-                data.umiejetnosci.forEach(skill => {
-                    const li = document.createElement('li');
-                    li.textContent = skill;
-                    skillsList.appendChild(li);
-                });
-    
-                const projectsList = document.getElementById('projects-list');
-                data.projekty.forEach(proj => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `<strong>${proj.tytul}</strong> – ${proj.opis}`;
-                    projectsList.appendChild(li);
-                });
-    
-                console.log("Dane załadowane pomyślnie!");
-            } catch (error) {
-                console.error("Błąd fetch:", error);
-            }
-        }
+    async function loadData() {
+        try {
+            const response = await fetch('data.json');
+            if (!response.ok) throw new Error('Problem z plikiem JSON');
+            const data = await response.json();
 
+            const skillsList = document.getElementById('skills-list');
+            data.umiejetnosci.forEach(skill => {
+                const li = document.createElement('li');
+                li.textContent = skill;
+                skillsList.appendChild(li);
+            });
+
+            const projectsList = document.getElementById('projects-list');
+            data.projekty.forEach(proj => {
+                const li = document.createElement('li');
+                li.innerHTML = `<strong>${proj.tytul}</strong> – ${proj.opis}`;
+                projectsList.appendChild(li);
+            });
+        } catch (error) {
+            console.error("Błąd fetch:", error);
+        }
+    }
     loadData();
 
     const vForm = document.getElementById('valeriiForm');
@@ -117,13 +111,40 @@ document.addEventListener('DOMContentLoaded', () => {
         const hasDigits = (str) => /[0-9]/.test(str);
         if (hasDigits(fields.fn) || hasDigits(fields.ln)) {
             if (hasDigits(fields.fn)) document.getElementById('fnameErr').textContent = 'Imię nie może zawierać cyfr';
-            if (hasDigits(fields.ln)) document.getElementById('lnameErr').textContent = 'Nazwisko nie может zawierać cyfr';
+            if (hasDigits(fields.ln)) document.getElementById('lnameErr').textContent = 'Nazwisko nie może zawierać cyfr';
             isValid = false;
         }
 
         if (isValid) {
-            statusMsg.textContent = 'Formularz zweryfikowany poprawnie!';
-            vForm.reset();
+            const formData = {
+                firstName: fields.fn,
+                lastName: fields.ln,
+                email: fields.em,
+                message: fields.ms,
+                date: new Date().toLocaleString()
+            };
+
+            const MOCK_API_URL = 'https://6a018cd936fb6ad04de120d3.mockapi.io/api/formforcv/:endpoint'; 
+
+            statusMsg.textContent = 'Wysyłanie danych...';
+
+            fetch(MOCK_API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Błąd serwera');
+                return response.json();
+            })
+            .then(data => {
+                statusMsg.textContent = 'Sukces! Dane zapisane na serwerze MockAPI.';
+                vForm.reset();
+            })
+            .catch(error => {
+                statusMsg.textContent = 'Błąd podczas komunikacji z serwerem.';
+                statusMsg.style.color = '#ff4d4d';
+            });
         }
     });
 });
